@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
@@ -12,7 +11,10 @@
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.59.0",
     "react-scripts": "^5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/material": "^7.2.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -37,12 +39,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-=======
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/material": "^7.2.0",
-    "react-hook-form": "^7.59.0"
->>>>>>> e131b46e641b1ca54cdcdeb4551c3c202c80bb76
   }
 }
