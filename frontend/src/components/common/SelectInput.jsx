@@ -1,32 +1,40 @@
 import React from "react";
+import {
+  Box,
+  FormLabel,
+  FormErrorMessage,
+  Select,
+} from "@chakra-ui/react";
 
-const SelectInput = ({ label, name, register, rules, error, options, ...rest }) => {
+const SelectInput = ({ 
+  label, 
+  name, 
+  options, 
+  rules, 
+  error, 
+  register, 
+  placeholder = "Choisir",
+  hideIcon = false,
+  ...props 
+}) => {
   return (
-    <div style={{ marginBottom: "1rem" }}>
-      <label style={{ display: "block", marginBottom: "0.3rem" }}>{label}</label>
-      <select
+    <Box mb={4}>
+      <FormLabel htmlFor={name}>{label}</FormLabel>
+      <Select
+        id={name}
+        placeholder={placeholder}
         {...register(name, rules)}
-        {...rest}
-        style={{
-          padding: "0.4rem",
-          border: error ? "1px solid red" : "1px solid #ccc",
-          borderRadius: "4px",
-          width: "100%",
-        }}
+        icon={hideIcon ? <Box /> : undefined}
+        {...props}
       >
-        <option value="">-- Choisir --</option>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
           </option>
         ))}
-      </select>
-      {error && (
-        <p style={{ color: "red", fontSize: "0.8rem" }}>
-          Ce champ est obligatoire ou invalide
-        </p>
-      )}
-    </div>
+      </Select>
+      {error && <FormErrorMessage>{error.message}</FormErrorMessage>}
+    </Box>
   );
 };
 

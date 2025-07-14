@@ -1,55 +1,70 @@
 import React from "react";
-import { useForm } from "react-hook-form";
-import TextInput from "../components/common/TextInput";
-import DateInput from "../components/common/DateInput";
-import SelectInput from "../components/common/SelectInput";
-const typeCreditOptions = [
-  { value: "conso", label: "Consommation" },
-  { value: "immo", label: "Immobilier" },
-  { value: "auto", label: "Auto" },
-];
-const NewCreditRequest = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+import { useForm, FormProvider } from "react-hook-form";
+import {
+  Container,
+  Heading,
+  Divider,
+  Stack,
+} from "@chakra-ui/react";
+
+import ClientInfoForm from "../components/ClientInfoForm";
+import CreditDetailsForm from "../components/CreditDetailsForm"; 
+import GuaranteesTable from "../components/GuaranteesTable";
+import FollowUpForm from "../components/FollowUpForm";
+import ActionButtons from "../components/common/ActionButtons";
+import AttachmentsTable from "../components/AttachmentsTable";
+import ObservationField from "../components/ObservationField";
+
+export default function NewCreditRequest() {
+
 
   const onSubmit = (data) => {
-    console.log("Données du formulaire :", data);
+    console.log("Formulaire:", data);
   };
 
+  const onReset = () => {
+    methods.reset();
+  };
+const documents = [
+  { id: 1, name: "Bulletin de paie", required: true, defaultChecked: false },
+  { id: 2, name: "CIN", required: true, defaultChecked: false },
+];
+const methods = useForm({
+  defaultValues: {
+    attachments: documents.map((doc) => ({ status: doc.defaultChecked })),
+  },
+});
+
+
+
+
+
   return (
-    <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
-      <h2>Demande de crédit</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextInput
-          label="Nom"
-          name="nom"
-          register={register}
-          rules={{ required: true }}
-          error={errors.nom}
-        />
+    <FormProvider {...methods}>
+      <Container maxW="4xl" py={6}>
+        <Heading mb={6}>Demande de crédit</Heading>
 
-        <DateInput
-          label="Date de naissance"
-          name="dateNaissance"
-          register={register}
-          rules={{ required: true }}
-          error={errors.dateNaissance}
-        />
-        
+        <form onSubmit={methods.handleSubmit(onSubmit)}>
+          <Stack spacing={8}>
+            <ClientInfoForm />
+
+            <Divider />
+
+            <CreditDetailsForm /> 
+
+            <Divider />
+            <GuaranteesTable />
+            <Divider />
+            <FollowUpForm />
+            <AttachmentsTable documents={documents} />
+            <ObservationField />
 
 
-<SelectInput
-  label="Type de crédit"
-  name="typeCredit"
-  register={register}
-  rules={{ required: true }}
-  error={errors.typeCredit}
-  options={typeCreditOptions}
-/>
 
-        <button type="submit">Soumettre</button>
-      </form>
-    </div>
+            <ActionButtons onReset={onReset} onSubmit={onSubmit} />
+          </Stack>
+        </form>
+      </Container>
+    </FormProvider>
   );
-};
-
-export default NewCreditRequest;
+}
