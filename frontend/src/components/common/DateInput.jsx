@@ -1,11 +1,16 @@
-import { FormControl, FormLabel, Input, FormErrorMessage } from "@chakra-ui/react";
+import React from 'react';
+import { FormControl, FormLabel, Input } from '@chakra-ui/react';
+import { useFormContext } from 'react-hook-form';
 
-const DateInput = ({ label, name, register, rules, error, ...props }) => (
-  <FormControl isInvalid={!!error} mb={4}>
-    <FormLabel htmlFor={name}>{label}</FormLabel>
-    <Input type="date" id={name} {...register(name, rules)} {...props} />
-    <FormErrorMessage>{error?.message}</FormErrorMessage>
-  </FormControl>
-);
+const DateInput = ({ label, name }) => {
+  const { register } = useFormContext(); 
+
+  return (
+    <FormControl>
+      <FormLabel>{label}</FormLabel>
+      <Input type="date" {...register(name)} />
+    </FormControl>
+  );
+};
 
 export default DateInput;

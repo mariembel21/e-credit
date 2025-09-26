@@ -6,7 +6,6 @@ export const creditTypes = [
 ];
 
 export const currencies = [
-  { value: 'MAD', label: 'MAD' },
   { value: 'EUR', label: 'EUR' },
   { value: 'USD', label: 'USD' },
   { value: "TND", label: "TND" },

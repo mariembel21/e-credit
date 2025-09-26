@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import {
   Box,
+  Heading,
+  VStack,
+  FormControl,
   FormLabel,
   FormErrorMessage,
   Input,
@@ -38,73 +41,75 @@ const CreditDetailsForm = () => {
   }, [creditType, amount, unit, setValue]);
 
   return (
-    <Box as="fieldset" borderWidth="1px" borderRadius="md" p={4} mb={6}>
-      <legend mb={4} fontWeight="bold"> Dossier crédit</legend>
+    <Box
+      as="fieldset"
+      borderWidth="1px"
+      borderColor="gray.200"
+      borderRadius="md"
+      p={6}
+      shadow="sm"
+      bg="white"
+    >
+      <Heading as="legend" size="md" mb={4} color="brand.700">
+        Dossier crédit
+      </Heading>
 
-      <Box mb={4}>
-        <FormLabel htmlFor="creditType">Type de crédit</FormLabel>
-        <Select
-          id="creditType"
-          placeholder="Choisir"
-          {...register("creditType", { required: "Ce champ est requis" })}
-          icon={<Box />}
-        >
-          {creditTypes.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-        {errors.creditType && (
-          <FormErrorMessage>{errors.creditType.message}</FormErrorMessage>
-        )}
-      </Box>
+      <VStack spacing={4} align="stretch">
+        <FormControl isInvalid={!!errors.creditType}>
+          <FormLabel htmlFor="creditType"fontWeight="bold">Type de crédit</FormLabel>
+          <Select
+            id="creditType"
+            placeholder="Choisir"
+            {...register("creditType", { required: "Ce champ est requis" })}
+          >
+            {creditTypes.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+          <FormErrorMessage>{errors.creditType?.message}</FormErrorMessage>
+        </FormControl>
 
-      <Box mb={4}>
-        <FormLabel htmlFor="amount">Montant</FormLabel>
-        <Input
-          type="number"
-          id="amount"
-          {...register("amount", {
-            required: "Ce champ est requis",
-            min: { value: 1, message: "Doit être positif" },
-          })}
-        />
-        {errors.amount && (
-          <FormErrorMessage>{errors.amount.message}</FormErrorMessage>
-        )}
-      </Box>
+        <FormControl isInvalid={!!errors.amount}>
+          <FormLabel htmlFor="amount" fontWeight="bold">Montant</FormLabel>
+          <Input
+            type="number"
+            id="amount"
+            {...register("amount", {
+              required: "Ce champ est requis",
+              min: { value: 1, message: "Doit être positif" },
+            })}
+          />
+          <FormErrorMessage>{errors.amount?.message}</FormErrorMessage>
+        </FormControl>
 
-      
-      <Box mb={4}>
-        <FormLabel htmlFor="unit">Unité</FormLabel>
-        <Select
-          id="unit"
-          placeholder="Choisir"
-          {...register("unit", { required: "Ce champ est requis" })}
-          icon={<Box />}
-        >
-          {timeUnits.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-        {errors.unit && (
-          <FormErrorMessage>{errors.unit.message}</FormErrorMessage>
-        )}
-      </Box>
+        <FormControl isInvalid={!!errors.unit}>
+          <FormLabel htmlFor="unit" fontWeight="bold">Unité</FormLabel>
+          <Select
+            id="unit"
+            placeholder="Choisir"
+            {...register("unit", { required: "Ce champ est requis" })}
+          >
+            {timeUnits.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+          <FormErrorMessage>{errors.unit?.message}</FormErrorMessage>
+        </FormControl>
 
-      
-      <Box mb={4}>
-        <FormLabel htmlFor="installments">Nbre d'échéances</FormLabel>
-        <Input
-          type="number"
-          id="installments"
-          readOnly
-          {...register("installments")}
-        />
-      </Box>
+        <FormControl>
+          <FormLabel htmlFor="installments" fontWeight="bold">Nbre d'échéances</FormLabel>
+          <Input
+            type="number"
+            id="installments"
+            readOnly
+            {...register("installments")}
+          />
+        </FormControl>
+      </VStack>
     </Box>
   );
 };

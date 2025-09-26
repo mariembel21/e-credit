@@ -1,92 +1,139 @@
 import React, { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
-import { Box, Heading } from "@chakra-ui/react";
+import { useFormContext, Controller } from "react-hook-form";
+import { Box, Heading, VStack, Text } from "@chakra-ui/react";
 import TextInput from "./common/TextInput";
 import SelectInput from "./common/SelectInput";
 import DateInput from "./common/DateInput";
-import { getClientInfoByCIN, getAccountDetails } from "../services/api";
+import { getClientInfoByCIN } from "../services/api";
 
 const ClientInfoForm = () => {
-  const {
-    register,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useFormContext();
+  const methods = useFormContext();
+  const { control, setValue, watch, formState: { errors } } = methods;
 
   const cin = watch("cin");
   const accountNumber = watch("accountNumber");
 
+  
   const [accountOptions, setAccountOptions] = useState([]);
+  const [accountsData, setAccountsData] = useState([]);
+  const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    const fetchClient = async () => {
+    const fetchClientAndAccounts = async () => {
+      setFetchError(null);
+      setAccountOptions([]);
+      setAccountsData([]);
+      
       if (/^\d{8}$/.test(cin)) {
-        const data = await getClientInfoByCIN(cin);
-        if (data) {
-          setValue("lastName", data.lastName);
-          setValue("firstName", data.firstName);
-          setValue("birthDate", data.birthDate);
-          setValue("familyStatus", data.familyStatus);
-          setAccountOptions(data.accounts);
-          if (data.accounts.length === 1) {
-            setValue("accountNumber", data.accounts[0].number);
+        try {
+          
+          const clientData = await getClientInfoByCIN(cin);
+          if (clientData) {
+            setValue("lastName", clientData.lastName);
+            setValue("firstName", clientData.firstName);
+            setValue("birthDate", clientData.birthDate);
+            setValue("familyStatus", clientData.familyStatus);
           }
+
+          
+          const res = await fetch(`http://localhost:3000/clients/${cin}/accounts`);
+          if (!res.ok) throw new Error("Failed to fetch accounts");
+          const accounts = await res.json();
+
+          setAccountsData(accounts); 
+
+          const formatted = accounts.map(acc => ({
+            value: acc.number,
+            label: acc.number,
+          }));
+          setAccountOptions(formatted);
+
+          if (formatted.length === 1) {
+            setValue("accountNumber", formatted[0].value);
+          }
+
+        } catch (error) {
+          console.error("Error fetching client or accounts:", error);
+          setFetchError("Erreur de récupération des informations du client.");
         }
       }
     };
-    fetchClient();
+
+    fetchClientAndAccounts();
   }, [cin, setValue]);
 
+
+ 
   useEffect(() => {
-    const fetchAccount = async () => {
-      if (accountNumber) {
-        const details = await getAccountDetails(accountNumber);
-        setValue("accountCurrency", details.currency);
-        setValue("accountOpeningDate", details.openingDate);
+    if (accountNumber && accountsData.length > 0) {
+      const selected = accountsData.find(acc => acc.number === accountNumber);
+      if (selected) {
+        setValue("accountCurrency", selected.currency);
+        setValue("accountOpeningDate", selected.openingDate);
+      } else {
+        setValue("accountCurrency", "");
+        setValue("accountOpeningDate", "");
       }
-    };
-    fetchAccount();
-  }, [accountNumber, setValue]);
+    }
+  }, [accountNumber, accountsData, setValue]);
+
 
   return (
-    <Box as="fieldset" borderWidth="1px" borderRadius="md" p={4} mb={6}>
-      <Heading as="legend" mb={4} fontWeight="bold">
+    <Box
+      as="fieldset"
+      borderWidth="1px"
+      borderColor="gray.200"
+      borderRadius="md"
+      p={6}
+      shadow="sm"
+      bg="white"
+    >
+      <Heading as="legend" size="md" mb={4} color="brand.700">
         Informations client
       </Heading>
 
-      <TextInput
-        label="N° CIN"
-        name="cin"
-        type="text"
-        rules={{
-          required: "Ce champ est requis",
-          pattern: { value: /^\d{8}$/, message: "8 chiffres" },
-        }}
-        error={errors.cin}
-        register={register}
-      />
+      <VStack spacing={4} align="stretch">
+        <TextInput
+          label="N° CIN"
+          name="cin"
+          type="text"
+          rules={{
+            required: "Ce champ est requis",
+            pattern: { value: /^\d{8}$/, message: "8 chiffres" },
+          }}
+          error={errors.cin}
+          register={methods.register}
+        />
 
-      <TextInput label="Nom" name="lastName" register={register} readOnly />
-      <TextInput label="Prénom" name="firstName" register={register} readOnly />
+        {fetchError && (
+          <Text color="red.500" fontSize="sm" mt={-2} mb={2}>
+            {fetchError}
+          </Text>
+        )}
 
-      <SelectInput
-        label="N° du compte"
-        name="accountNumber"
-        options={accountOptions.map((acc) => ({
-          value: acc.number,
-          label: acc.number,
-        }))}
-        rules={{ required: "Ce champ est requis" }}
-        error={errors.accountNumber}
-        register={register}
-        hideIcon={true}
-      />
+        <TextInput label="Nom" name="lastName" readOnly />
+        <TextInput label="Prénom" name="firstName" readOnly />
 
-      <TextInput label="Devise" name="accountCurrency" register={register} readOnly />
-      <DateInput label="Date d'ouverture du compte" name="accountOpeningDate" register={register} readOnly />
-      <DateInput label="Date de naissance" name="birthDate" register={register} readOnly />
-      <TextInput label="Situation familiale" name="familyStatus" register={register} readOnly />
+        <Controller
+          name="accountNumber"
+          control={control}
+          rules={{ required: "Ce champ est requis" }}
+          render={({ field, fieldState }) => (
+            <SelectInput
+              {...field}
+              label="N° du compte"
+              options={accountOptions}
+              error={fieldState.error}
+            />
+          )}
+        />
+
+        <TextInput label="Devise" name="accountCurrency" readOnly />
+        <DateInput label="Date d'ouverture du compte" name="accountOpeningDate" readOnly />
+        <DateInput label="Date de naissance" name="birthDate" readOnly />
+        <TextInput label="Situation familiale" name="familyStatus" readOnly />
+
+      </VStack>
     </Box>
   );
 };

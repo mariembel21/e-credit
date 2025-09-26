@@ -1,40 +1,27 @@
+// SelectInput.jsx
 import React from "react";
-import {
-  Box,
-  FormLabel,
-  FormErrorMessage,
-  Select,
-} from "@chakra-ui/react";
+import { Select, FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
 
-const SelectInput = ({ 
-  label, 
-  name, 
-  options, 
-  rules, 
-  error, 
-  register, 
-  placeholder = "Choisir",
-  hideIcon = false,
-  ...props 
-}) => {
+const SelectInput = ({ label, options, value, onChange, onBlur, error, name }) => {
   return (
-    <Box mb={4}>
+    <FormControl isInvalid={!!error}>
       <FormLabel htmlFor={name}>{label}</FormLabel>
       <Select
         id={name}
-        placeholder={placeholder}
-        {...register(name, rules)}
-        icon={hideIcon ? <Box /> : undefined}
-        {...props}
+        name={name}
+        value={value || ""}
+        onChange={onChange}
+        onBlur={onBlur}
+        placeholder="choisir"
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
           </option>
         ))}
       </Select>
-      {error && <FormErrorMessage>{error.message}</FormErrorMessage>}
-    </Box>
+      <FormErrorMessage>{error && error.message}</FormErrorMessage>
+    </FormControl>
   );
 };
 
