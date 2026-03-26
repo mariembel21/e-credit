@@ -1,6 +1,5 @@
 
 # E-Credit – Credit Request Management App
-
 E-Credit is a full-stack web application that allows users to submit, track, and manage credit requests digitally.  
 It is designed for efficiency, transparency, and collaboration between clients and credit officers.
 ## Features
@@ -16,6 +15,4 @@ It is designed for efficiency, transparency, and collaboration between clients a
 ## Demo Branch
 This branch contains a demo version of the project for review purposes.  
 No write access is allowed — perfect for code review and portfolio showcasing.
-
----
 
